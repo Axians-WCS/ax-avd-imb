@@ -1,7 +1,7 @@
 {
     "Name": "Azure Image Builder Service Image Creation Role",
     "IsCustom": true,
-    "Description": "Image Builder access to create resources for the image build, you should delete or split out as appropriate",
+    "Description": "Permissions for Image Builder on Subnets",
     "Actions": [
         "Microsoft.Network/virtualNetworks/subnets/join/action",
         "Microsoft.Network/virtualNetworks/read"
