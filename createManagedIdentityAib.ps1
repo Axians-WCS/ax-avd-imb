@@ -31,13 +31,8 @@
       Connect-AzAccount
 #>
 
-# Register Features
-Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network, Microsoft.ManagedIdentity, Microsoft.ContainerInstance |
-  Where-Object RegistrationState -ne Registered |
-    Register-AzResourceProvider
-
 # Variables
-$subscriptionID = "1b1d5253-7f5a-4359-aa8c-f2a8cfc09f67" # Set the subscription ID where the resources will be deployed
+$subscriptionID = "setsubid" # Set the subscription ID where the resources will be deployed
 $imageResourceGroup = 'xyz-p1-imb-01' # Resource group name for the image builder resources
 $vnetResourceGroup = 'xyz-p1-hub-01' # Resource group where the vnet is deployed
 $location = 'West Europe'
@@ -46,20 +41,36 @@ $location = 'West Europe'
 Set-AzContext -SubscriptionId $subscriptionID
 Write-Output (Get-AzContext)
 
+# Register Features
+Get-AzResourceProvider -ProviderNamespace Microsoft.Compute, Microsoft.KeyVault, Microsoft.Storage, Microsoft.VirtualMachineImages, Microsoft.Network, Microsoft.ManagedIdentity, Microsoft.ContainerInstance |
+  Where-Object RegistrationState -ne Registered |
+    Register-AzResourceProvider
+
 # Create the resource group for image builder resources if it doesn't exist
 New-AzResourceGroup -Name $imageResourceGroup -Location $location -ErrorAction SilentlyContinue
 
 # Generate Managed Identity name based on the resource group name
-[int]$timeInt = $(Get-Date -UFormat '%s')
 $cleanedRgName = $imageResourceGroup -replace '-', ''
-$identityName = "$($cleanedRgName)mi$timeInt"
-$imageRoleDefName = "Azure Image Builder Image Def $timeInt"
-$networkRoleDefName = "Azure Image Builder VNet Role $timeInt"
+$baseIdentityName = "$($cleanedRgName)mi"
+$index = 1
+
+# Loop to find the next available Managed Identity name
+do {
+    $identityName = "$baseIdentityName$($index.ToString("D2"))" # Format index with leading zeroes, e.g., mi01, mi02
+    $existingIdentity = Get-AzUserAssignedIdentity -ResourceGroupName $imageResourceGroup -Name $identityName -ErrorAction SilentlyContinue
+    $index++
+} while ($existingIdentity -ne $null)
+
+Write-Output "Managed Identity Name: $identityName"
 
 # Create the User Identity
 New-AzUserAssignedIdentity -ResourceGroupName $imageResourceGroup -Name $identityName -Location $location
 $identityNameResourceId = (Get-AzUserAssignedIdentity -ResourceGroupName $imageResourceGroup -Name $identityName).Id
 $identityNamePrincipalId = (Get-AzUserAssignedIdentity -ResourceGroupName $imageResourceGroup -Name $identityName).PrincipalId
+
+# set Role variables
+$imageRoleDefName = "Azure Image Builder Image Def $timeInt"
+$networkRoleDefName = "Azure Image Builder VNet Role $timeInt"
 
 # Process aibRoleImageCreation.json
 $myRoleImageCreationUrl = 'https://raw.githubusercontent.com/Axians-WCS/ax-avd-imb/refs/heads/main/aibRoleImageCreation.json'
