@@ -58,7 +58,7 @@ $imageRoleDefName = "Azure Image Builder Image Def $timeInt"
 $networkRoleDefName = "Azure Image Builder VNet Role $timeInt"
 
 # Download and configure aibRoleImageCreation.json
-$myRoleImageCreationUrl = 'https://raw.githubusercontent.com/Axians-WCS/ax-avd-imb/refs/heads/main/aibRoleImageCreation.json'
+$myRoleImageCreationUrl = 'https://raw.githubusercontent.com/Axians-WCS/ax-avd-imb/refs/heads/main/managedIdentity/aibRoleImageCreation.json'
 $myRoleImageCreationPath = "myRoleImageCreation.json"
 Invoke-WebRequest -Uri $myRoleImageCreationUrl -OutFile $myRoleImageCreationPath -UseBasicParsing
 (Get-Content $myRoleImageCreationPath -Raw) -replace '<subscriptionID>', $subscriptionID -replace '<rgName>', $imageResourceGroup -replace 'Azure Image Builder Service Image Creation Role', $imageRoleDefName | Set-Content $myRoleImageCreationPath
@@ -68,7 +68,7 @@ New-AzRoleDefinition -InputFile $myRoleImageCreationPath
 New-AzRoleAssignment -ObjectId $identityNamePrincipalId -RoleDefinitionName $imageRoleDefName -Scope "/subscriptions/$subscriptionID/resourceGroups/$imageResourceGroup"
 
 # Download and configure aibRoleVnetActions.json
-$myRoleVnetActionsUrl = 'https://raw.githubusercontent.com/Axians-WCS/ax-avd-imb/refs/heads/main/aibRoleVnetActions.json'
+$myRoleVnetActionsUrl = 'https://raw.githubusercontent.com/Axians-WCS/ax-avd-imb/refs/heads/main/managedIdentity/aibRoleVnetActions.json'
 $myRoleVnetActionsPath = "aibRoleVnetActions.json"
 Invoke-WebRequest -Uri $myRoleVnetActionsUrl -OutFile $myRoleVnetActionsPath -UseBasicParsing
 (Get-Content $myRoleVnetActionsPath -Raw) -replace '<subscriptionID>', $subscriptionID -replace '<vnetRgName>', $vnetResourceGroup -replace 'Azure Image Builder Service Image Creation Role', $networkRoleDefName | Set-Content $myRoleVnetActionsPath
