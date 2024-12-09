@@ -36,7 +36,7 @@ catch {
     exit 1
 }
 
-# Monitor scan progress
+# Monitor scan progress using ScanInProgress property
 try {
     do {
         Start-Sleep -Seconds 30
