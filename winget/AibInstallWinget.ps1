@@ -1,21 +1,20 @@
 <#
 .SYNOPSIS
-    Azure Image Builder script to install and initialize Winget and Microsoft Store if missing.
+    Azure Image Builder script to install or upgrade Winget.
 
 .DESCRIPTION
     This script:
-    - Ensures the Microsoft Store is installed and accessible.
-    - Installs Winget if missing.
-    - Initializes Microsoft Store to ensure Winget functions properly.
+    - Ensures Winget is installed.
+    - Initializes required services to ensure Winget functions properly.
 
 .AUTHOR
     Luuk Ros
 
 .VERSION
-    1.3
+    1.4
 
 .LAST UPDATED
-    10-02-2025
+    11-02-2025
 #>
 
 #################################################################
@@ -23,61 +22,9 @@
 #################################################################
 
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-Write-Host "*** AIB CUSTOMIZER PHASE: Starting Winget & Microsoft Store Installation ***"
+Write-Host "*** AIB CUSTOMIZER PHASE: Installing or Upgrading Winget ***"
 
-# Step 1: Ensure Microsoft Store is Installed
-Write-Host "*** AIB CUSTOMIZER PHASE *** Checking if Microsoft Store is installed ***"
-
-$storePackage = Get-AppxPackage -Name Microsoft.WindowsStore -ErrorAction SilentlyContinue
-
-if (-not $storePackage) {
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Microsoft Store is missing. Attempting to install... ***"
-
-    # Define Microsoft Store package URL (Microsoft official link)
-    $storeInstallUrl = "https://aka.ms/MicrosoftStoreApp"
-
-    # Define local download path
-    $storeInstallerPath = "$env:TEMP\MicrosoftStore.AppxBundle"
-
-    # Download the Microsoft Store installer
-    try {
-        Invoke-WebRequest -Uri $storeInstallUrl -OutFile $storeInstallerPath -UseBasicParsing
-    } catch {
-        Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to download Microsoft Store. Exiting... ***"
-        exit 1
-    }
-
-    # Install the Microsoft Store
-    try {
-        Add-AppxProvisionedPackage -Online -PackagePath $storeInstallerPath -SkipLicense
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Microsoft Store installed successfully! ***"
-    } catch {
-        Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to install Microsoft Store. Exiting... ***"
-        exit 1
-    }
-
-    # Clean up the installer file
-    Remove-Item -Path $storeInstallerPath -Force
-} else {
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Microsoft Store is already installed. Skipping installation. ***"
-}
-
-# Step 2: Force Initialize the Microsoft Store
-Write-Host "*** AIB CUSTOMIZER PHASE *** Ensuring Microsoft Store is initialized for Winget ***"
-
-# Reinstall App Installer (which includes Winget)
-Get-AppxPackage -Name Microsoft.DesktopAppInstaller | Foreach-Object { 
-    Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" 
-}
-
-# Open Microsoft Store once to force initialization
-Start-Process -FilePath "explorer.exe" -ArgumentList "ms-windows-store:" -WindowStyle Hidden
-Start-Sleep -Seconds 10
-Stop-Process -Name "WinStore.App" -ErrorAction SilentlyContinue
-
-Write-Host "*** AIB CUSTOMIZER PHASE *** Microsoft Store has been initialized ***"
-
-# Step 3: Ensure Winget is Installed
+# Ensure Winget is Installed
 function Check-Winget {
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         Write-Host "*** AIB CUSTOMIZER PHASE *** Winget is not installed. Installing now... ***"
@@ -97,10 +44,11 @@ function Check-Winget {
             exit 1
         }
 
-        # Install Winget (App Installer)
+        # Install Winget (App Installer) normally
         Write-Host "*** AIB CUSTOMIZER PHASE *** Installing Winget (App Installer) ***"
         try {
-            Add-AppxProvisionedPackage -Online -PackagePath $wingetInstallerPath -SkipLicense
+            Add-AppxPackage -Path $wingetInstallerPath
+            Write-Host "*** AIB CUSTOMIZER PHASE *** Winget installed successfully ***"
         } catch {
             Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to install Winget. Exiting... ***"
             exit 1
@@ -109,16 +57,11 @@ function Check-Winget {
         # Clean up installer file
         Remove-Item -Path $wingetInstallerPath -Force
 
-        # Wait a few seconds to ensure Winget is fully registered
-        Start-Sleep -Seconds 5
-
         # Verify Winget installation
         if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
             Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Winget installation failed. Exiting... ***"
             exit 1
         }
-
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Winget installed successfully ***"
     } else {
         Write-Host "*** AIB CUSTOMIZER PHASE *** Winget is already available ***"
     }
@@ -127,14 +70,25 @@ function Check-Winget {
 # Run the function to check if Winget is installed
 Check-Winget
 
-# Step 4: Ensure Winget Sources Are Updated
+#Ensure Winget Sources Are Updated
 Write-Host "*** AIB CUSTOMIZER PHASE *** Updating Winget sources ***"
 winget source update
+
+# Ensure Winget initializes properly
+Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting services to ensure Winget works ***"
+
+$services = @("AppXSvc", "ClipSVC")
+foreach ($service in $services) {
+    Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting $service ***"
+    Restart-Service -Name $service -Force -ErrorAction SilentlyContinue
+}
+
+Write-Host "*** AIB CUSTOMIZER PHASE *** Winget services restarted ***"
 
 # Finalize script execution
 $stopwatch.Stop()
 $elapsedTime = $stopwatch.Elapsed
-Write-Host "*** AIB CUSTOMIZER PHASE: Winget & Microsoft Store Installation Completed in $elapsedTime ***"
+Write-Host "*** AIB CUSTOMIZER PHASE: Winget Installation Completed in $elapsedTime ***"
 
 #################################################################
 #                         END OF SCRIPT                         #
