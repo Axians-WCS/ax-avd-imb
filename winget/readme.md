@@ -2,7 +2,7 @@
 
 This repository contains scripts to install applications using **Winget** with **Azure Image Builder (AIB)**.
 
-## 🔹 How It Works
+## How It Works
 - The **`AibInstallWinget.ps1`** script ensures that **Winget is installed and ready to use** on the host.
 - All other scripts install specific applications, following a **modular** approach.
 
@@ -16,7 +16,7 @@ This repository contains scripts to install applications using **Winget** with *
 | **AibInstallPowerBi.ps1**           | Installs **Microsoft Power BI Desktop**, used for data visualization and business intelligence. |
 | **AibInstallSSMS.ps1**              | Installs **SQL Server Management Studio (SSMS)**, a tool for managing Microsoft SQL Server databases. |
 
-## 🚀 Usage
+## 🔧 Usage
 1. **Run or Add `AibInstallWinget.ps1` first** to ensure Winget is available.
 2. **Run or Add any other script as needed** to install specific applications.
 
