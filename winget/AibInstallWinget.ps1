@@ -70,7 +70,7 @@ function Check-Winget {
 # Run the function to check if Winget is installed
 Check-Winget
 
-#Ensure Winget Sources Are Updated
+# Ensure Winget Sources Are Updated
 Write-Host "*** AIB CUSTOMIZER PHASE *** Updating Winget sources ***"
 winget source update
 
