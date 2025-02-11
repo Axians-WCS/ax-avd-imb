@@ -10,11 +10,12 @@ This repository contains scripts to install applications using **Winget** with *
 
 | Script Name                          | Description |
 |--------------------------------------|-------------|
-| **AibInstallWinget.ps1**            | Ensures Winget is installed and initialized. This script is required before running any other installation scripts. |
-| **AibInstallAzureCLI.ps1**          | Installs **Azure CLI**, a command-line tool for managing Azure resources. |
-| **AibInstallAzureStorageExplorer.ps1** | Installs **Azure Storage Explorer**, a GUI tool for managing Azure Storage accounts. |
-| **AibInstallPowerBi.ps1**           | Installs **Microsoft Power BI Desktop**, used for data visualization and business intelligence. |
-| **AibInstallSSMS.ps1**              | Installs **SQL Server Management Studio (SSMS)**, a tool for managing Microsoft SQL Server databases. |
+| **aibInstallWinget.ps1**            | Ensures Winget is installed and initialized. This script is required before running any other installation scripts. |
+| **aibInstallAzureCLI.ps1**          | Installs **Azure CLI**, a command-line tool for managing Azure resources. |
+| **aibInstallAzureStorageExplorer.ps1** | Installs **Azure Storage Explorer**, a GUI tool for managing Azure Storage accounts. |
+| **aibInstallPowerBi.ps1**           | Installs **Microsoft Power BI Desktop**, used for data visualization and business intelligence. |
+| **aibInstallSSMS.ps1**              | Installs **SQL Server Management Studio (SSMS)**, a tool for managing Microsoft SQL Server databases. |
+| **aibInstallRemoteDesktopManager.ps1**              | Installs **Devolutions Remote Desktop Manager**, a tool for managing servers remotely. |
 
 ## 🔧 Usage
 1. **Run or Add `AibInstallWinget.ps1` first** to ensure Winget is available.
