@@ -5,16 +5,17 @@
 .DESCRIPTION
     This script:
     - Ensures Winget is installed.
+    - Uses DISM to install Winget since AIB runs as SYSTEM.
     - Initializes required services to ensure Winget functions properly.
 
 .AUTHOR
     Luuk Ros
 
 .VERSION
-    1.4
+    1.5
 
 .LAST UPDATED
-    11-02-2025
+    12-02-2025
 #>
 
 #################################################################
@@ -24,8 +25,8 @@
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 Write-Host "*** AIB CUSTOMIZER PHASE: Installing or Upgrading Winget ***"
 
-# Ensure Winget is Installed
-function Check-Winget {
+# Step 1: Ensure Winget is Installed Using DISM
+function Install-Winget {
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
         Write-Host "*** AIB CUSTOMIZER PHASE *** Winget is not installed. Installing now... ***"
 
@@ -44,10 +45,10 @@ function Check-Winget {
             exit 1
         }
 
-        # Install Winget (App Installer) normally
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Installing Winget (App Installer) ***"
+        # Install Winget using DISM (Provisioning for all users)
+        Write-Host "*** AIB CUSTOMIZER PHASE *** Installing Winget using DISM ***"
         try {
-            Add-AppxPackage -Path $wingetInstallerPath
+            Add-ProvisionedAppxPackage -Online -PackagePath $wingetInstallerPath -SkipLicense
             Write-Host "*** AIB CUSTOMIZER PHASE *** Winget installed successfully ***"
         } catch {
             Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to install Winget. Exiting... ***"
@@ -67,15 +68,11 @@ function Check-Winget {
     }
 }
 
-# Run the function to check if Winget is installed
-Check-Winget
+# Run the function to check/install Winget
+Install-Winget
 
-# Ensure Winget Sources Are Updated
-Write-Host "*** AIB CUSTOMIZER PHASE *** Updating Winget sources ***"
-winget source update
-
-# Ensure Winget initializes properly
-Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting services to ensure Winget works ***"
+# Step 2: Restart Required Services to Ensure Winget Works
+Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting services to ensure Winget functions correctly ***"
 
 $services = @("AppXSvc", "ClipSVC")
 foreach ($service in $services) {
@@ -84,6 +81,10 @@ foreach ($service in $services) {
 }
 
 Write-Host "*** AIB CUSTOMIZER PHASE *** Winget services restarted ***"
+
+# Step 3: Ensure Winget Sources Are Updated
+Write-Host "*** AIB CUSTOMIZER PHASE *** Updating Winget sources ***"
+winget source update
 
 # Finalize script execution
 $stopwatch.Stop()
