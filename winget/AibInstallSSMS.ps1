@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-    Azure Image Builder script to install Microsoft SQL Server Management Studio using Winget.
+    Azure Image Builder script to install SQL Server Management Studio using Winget.
 
 .DESCRIPTION
     This script:
     - Assumes Winget is already installed and initialized.
-    - Installs Microsoft SQL Server Management Studio.
+    - Installs SQL Server Management Studio.
 
 .AUTHOR
     Luuk Ros
@@ -22,22 +22,29 @@
 #################################################################
 
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-Write-Host "*** AIB CUSTOMIZER PHASE: Installing Microsoft SQL Server Management Studio ***"
+Write-Host "*** AIB CUSTOMIZER PHASE: Installing SQL Server Management Studio ***"
 
-# Ensure Winget is available
-if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Winget is not installed or not available. Exiting... ***"
+# Locate winget dynamically
+$wingetPath = (Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" | Select-Object -First 1)
+
+# If winget is still not found, fail gracefully
+if (-not $wingetPath) {
+    Write-Host "*** AIB CUSTOMIZER PHASE ERROR: Winget not found in WindowsApps. Exiting... ***"
     exit 1
 }
 
+Write-Host "*** Using Winget from: $wingetPath ***"
+
 # Define application details
 $wingetAppId = "Microsoft.SQLServerManagementStudio"
-$wingetAppName = "Microsoft SQL Server Management Studio"
+$wingetAppName = "SQL Server Management Studio"
 
 # Install Power BI Desktop using Winget
 Write-Host "*** AIB CUSTOMIZER PHASE *** Installing $wingetAppName ($wingetAppId) using Winget ***"
 try {
-    winget install -e --id $wingetAppId --accept-source-agreements --accept-package-agreements --silent
+    Start-Process -FilePath $wingetPath `
+        -ArgumentList "install --id $wingetAppId --accept-source-agreements --accept-package-agreements --scope machine --silent" `
+        -Wait -NoNewWindow
     Write-Host "*** AIB CUSTOMIZER PHASE *** Successfully installed $wingetAppName ***"
 } catch {
     Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to install $wingetAppName [$(${_}.Exception.Message)] ***"

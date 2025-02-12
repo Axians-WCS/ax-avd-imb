@@ -24,11 +24,16 @@
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 Write-Host "*** AIB CUSTOMIZER PHASE: Installing Remote Desktop Manager ***"
 
-# Ensure Winget is available
-if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Winget is not installed or not available. Exiting... ***"
+# Locate winget dynamically
+$wingetPath = (Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" | Select-Object -First 1)
+
+# If winget is still not found, fail gracefully
+if (-not $wingetPath) {
+    Write-Host "*** AIB CUSTOMIZER PHASE ERROR: Winget not found in WindowsApps. Exiting... ***"
     exit 1
 }
+
+Write-Host "*** Using Winget from: $wingetPath ***"
 
 # Define application details
 $wingetAppId = "Devolutions.RemoteDesktopManager"
@@ -37,7 +42,9 @@ $wingetAppName = "Remote Desktop Manager"
 # Install Power BI Desktop using Winget
 Write-Host "*** AIB CUSTOMIZER PHASE *** Installing $wingetAppName ($wingetAppId) using Winget ***"
 try {
-    winget install -e --id $wingetAppId --accept-source-agreements --accept-package-agreements --silent
+    Start-Process -FilePath $wingetPath `
+        -ArgumentList "install --id $wingetAppId --accept-source-agreements --accept-package-agreements --scope machine --silent" `
+        -Wait -NoNewWindow
     Write-Host "*** AIB CUSTOMIZER PHASE *** Successfully installed $wingetAppName ***"
 } catch {
     Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to install $wingetAppName [$(${_}.Exception.Message)] ***"

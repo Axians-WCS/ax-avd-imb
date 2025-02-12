@@ -4,17 +4,18 @@
 
 .DESCRIPTION
     This script:
-    - Assumes Winget is already installed and initialized.
-    - Installs Microsoft Azure CLI.
+    - Assumes Winget is already installed.
+    - Dynamically locates Winget to ensure execution.
+    - Installs Microsoft Azure CLI machine-wide.
 
 .AUTHOR
     Luuk Ros
 
 .VERSION
-    1.1
+    1.5
 
 .LAST UPDATED
-    10-02-2025
+    12-02-2025
 #>
 
 #################################################################
@@ -24,30 +25,37 @@
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 Write-Host "*** AIB CUSTOMIZER PHASE: Installing Microsoft Azure CLI ***"
 
-# Ensure Winget is available
-if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Winget is not installed or not available. Exiting... ***"
+# Locate winget dynamically
+$wingetPath = (Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" | Select-Object -First 1)
+
+# If winget is still not found, fail gracefully
+if (-not $wingetPath) {
+    Write-Host "*** AIB CUSTOMIZER PHASE ERROR: Winget not found in WindowsApps. Exiting... ***"
     exit 1
 }
+
+Write-Host "*** Using Winget from: $wingetPath ***"
 
 # Define application details
 $wingetAppId = "Microsoft.AzureCLI"
 $wingetAppName = "Microsoft Azure CLI"
 
-# Install Power BI Desktop using Winget
-Write-Host "*** AIB CUSTOMIZER PHASE *** Installing $wingetAppName ($wingetAppId) using Winget ***"
+# Install Microsoft Azure CLI using Winget (Machine-Wide)
+Write-Host "*** AIB CUSTOMIZER PHASE: Installing $wingetAppName ($wingetAppId) using Winget ***"
 try {
-    winget install -e --id $wingetAppId --accept-source-agreements --accept-package-agreements --silent
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Successfully installed $wingetAppName ***"
+    Start-Process -FilePath $wingetPath `
+        -ArgumentList "install --id $wingetAppId --accept-source-agreements --accept-package-agreements --scope machine --silent" `
+        -Wait -NoNewWindow
+    Write-Host "*** AIB CUSTOMIZER PHASE: Successfully installed $wingetAppName ***"
 } catch {
-    Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to install $wingetAppName [$(${_}.Exception.Message)] ***"
+    Write-Host "*** AIB CUSTOMIZER PHASE ERROR: Failed to install $wingetAppName [$($_.Exception.Message)] ***"
     exit 1
 }
 
 # Finalize script execution
 $stopwatch.Stop()
 $elapsedTime = $stopwatch.Elapsed
-Write-Host "*** AIB CUSTOMIZER PHASE: Installation of $wingetAppName Completed in $elapsedTime ***"
+Write-Host "*** AIB CUSTOMIZER PHASE: Installation of $wingetAppName completed in $elapsedTime ***"
 
 #################################################################
 #                         END OF SCRIPT                         #
