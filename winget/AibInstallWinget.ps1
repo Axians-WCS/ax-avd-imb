@@ -4,8 +4,9 @@
 
 .DESCRIPTION
     This script:
-    - Ensures Winget is installed.
-    - Restarts services to ensure Winget functions properly.
+    - Always downloads and installs the latest version of Winget.
+    - Uses the same logic as the working Packer solution.
+    - Restarts required services to ensure Winget functions properly.
 
 .AUTHOR
     Luuk Ros (Based on avd-installapplications by Niek Pruntel)
@@ -24,72 +25,42 @@
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 Write-Host "*** AIB CUSTOMIZER PHASE: Installing or Upgrading Winget ***"
 
-# Function to Check if Winget Exists
-function Check-Winget {
-    # Check if Winget is available via command
-    if (Get-Command winget -ErrorAction SilentlyContinue) {
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Winget is already available ***"
-        return $true
-    }
-
-    # Check if Winget.exe exists in WindowsApps
-    $WingetProgLocation = Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" | Select-Object -First 1
-    if ($WingetProgLocation) {
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Winget.exe found in $($WingetProgLocation.Directory.FullName) ***"
-        return $true
-    }
-
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Winget is not installed ***"
-    return $false
+# Define Installer Folder
+$InstallerFolder = Join-Path $env:ProgramData "CustomScripts"
+if (!(Test-Path $InstallerFolder)) {
+    New-Item -Path $InstallerFolder -ItemType Directory -Force -Confirm:$false
 }
 
-# Function to Install Winget
-function Install-Winget {
-    if (Check-Winget) {
-        return
-    }
+# Define Winget Installer URL & Path
+$WinGetURL = "https://aka.ms/getwinget"
+$WingetInstallerPath = "$InstallerFolder\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle"
 
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Winget is missing. Installing now... ***"
-
-    # Define Winget Installer URL
-    $wingetInstallerUrl = "https://aka.ms/getwinget"
-    $wingetInstallerPath = "$env:TEMP\AppInstaller.msixbundle"
-
-    # Download Winget
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Downloading Winget installer... ***"
-    try {
-        Invoke-WebRequest -Uri $wingetInstallerUrl -OutFile $wingetInstallerPath -UseBasicParsing
-    } catch {
-        Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to download Winget installer. Exiting... ***"
-        exit 1
-    }
-
-    # Install Winget using `AppInstaller.exe`
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Installing Winget using AppInstaller.exe ***"
-    try {
-        Start-Process -FilePath "C:\Windows\System32\AppInstallerCLI.exe" -ArgumentList "install $wingetInstallerPath" -Wait -NoNewWindow
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Winget installed successfully ***"
-    } catch {
-        Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to install Winget. Exiting... ***"
-        exit 1
-    }
-
-    # Clean up installer file
-    Remove-Item -Path $wingetInstallerPath -Force
-
-    # Verify Winget installation
-    if (-not (Check-Winget)) {
-        Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Winget installation failed. Exiting... ***"
-        exit 1
-    }
+# Download Winget MSIXBundle
+Write-Host "*** AIB CUSTOMIZER PHASE *** Downloading Winget installer... ***"
+try {
+    Invoke-WebRequest -Uri $WinGetURL -OutFile $WingetInstallerPath -UseBasicParsing
+    Write-Host "*** AIB CUSTOMIZER PHASE *** Winget downloaded successfully ***"
+} catch {
+    Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to download Winget installer. Exiting... ***"
+    exit 1
 }
 
-# Install Winget
-Install-Winget
+# Install Winget MSIXBundle
+Write-Host "*** AIB CUSTOMIZER PHASE *** Installing Winget ***"
+try {
+    Add-AppxProvisionedPackage -Online -PackagePath $WingetInstallerPath -SkipLicense
+    Write-Host "*** AIB CUSTOMIZER PHASE *** Winget installed successfully ***"
+} catch {
+    Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Failed to install Winget. Exiting... ***"
+    exit 1
+}
 
-# Restart Required Services to Ensure Winget Works
+# Remove Installer File
+Remove-Item -Path $WingetInstallerPath -Force -ErrorAction SilentlyContinue
+Write-Host "*** AIB CUSTOMIZER PHASE *** Winget installation cleanup complete ***"
+
+# Restart Services to Ensure Winget Works
 Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting services to ensure Winget functions correctly ***"
-
 $services = @("AppXSvc", "ClipSVC")
 foreach ($service in $services) {
     Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting $service ***"
@@ -98,9 +69,18 @@ foreach ($service in $services) {
 
 Write-Host "*** AIB CUSTOMIZER PHASE *** Winget services restarted ***"
 
-# Ensure Winget Sources Are Updated
-Write-Host "*** AIB CUSTOMIZER PHASE *** Updating Winget sources ***"
-winget source update
+# Wait for system to register Winget
+Write-Host "*** AIB CUSTOMIZER PHASE *** Waiting for Winget to become available ***"
+Start-Sleep -Seconds 5
+
+# Attempt to Get Winget Version
+$WingetPath = Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($WingetPath) {
+    Write-Host "*** AIB CUSTOMIZER PHASE *** Winget found at: $($WingetPath.FullName) ***"
+    & "$($WingetPath.FullName)" -v
+} else {
+    Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Winget is not recognized. A reboot may be required. ***"
+}
 
 # Finalize script execution
 $stopwatch.Stop()
