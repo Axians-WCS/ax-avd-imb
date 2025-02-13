@@ -5,15 +5,16 @@
 .DESCRIPTION
     This script:
     - Downloads and installs the latest version of Winget.
+    - Ensures Winget is preconfigured for use in automated builds.
+    - Enables `msstore` source and accepts agreements.
     - Checks if Winget is already installed and skips unnecessary installs.
     - Restarts required services only if necessary.
-    - Provides logging for debugging in AIB.
 
 .AUTHOR
     Luuk Ros (Based on avd-installapplications by Niek Pruntel)
 
 .VERSION
-    1.6
+    1.7
 
 .LAST UPDATED
     12-02-2025
@@ -32,7 +33,6 @@ if ($WingetPath) {
     Write-Host "*** AIB CUSTOMIZER PHASE *** Winget already installed at: $WingetPath ***"
     $currentWingetVersion = & "$WingetPath" -v
     Write-Host "*** AIB CUSTOMIZER PHASE *** Current Winget Version: $currentWingetVersion ***"
-    Write-Host "*** AIB CUSTOMIZER PHASE: Skipping installation. ***"
 } else {
     # Define Installer Folder
     $InstallerFolder = Join-Path $env:ProgramData "CustomScripts"
@@ -66,30 +66,66 @@ if ($WingetPath) {
     # Remove Installer File
     Remove-Item -Path $WingetInstallerPath -Force -ErrorAction SilentlyContinue
     Write-Host "*** AIB CUSTOMIZER PHASE *** Winget installation cleanup complete ***"
+}
 
-    # Restart Services to Ensure Winget Works
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting services to ensure Winget functions correctly ***"
-    $services = @("AppXSvc", "ClipSVC")
-    foreach ($service in $services) {
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting $service ***"
-        Restart-Service -Name $service -Force -ErrorAction SilentlyContinue
-    }
+# Ensure Winget is Fully Functional
+Write-Host "*** AIB CUSTOMIZER PHASE *** Ensuring Winget is preconfigured ***"
 
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Winget services restarted ***"
+# Reset and Update Sources
+Start-Process -FilePath $WingetPath `
+    -ArgumentList "source reset --force" `
+    -Wait -NoNewWindow
 
-    # Wait for system to register Winget
-    Write-Host "*** AIB CUSTOMIZER PHASE *** Waiting for Winget to become available ***"
-    Start-Sleep -Seconds 5
+Start-Process -FilePath $WingetPath `
+    -ArgumentList "source update" `
+    -Wait -NoNewWindow
 
-    # Check if Winget is installed successfully
-    $WingetPath = Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1
-    if ($WingetPath) {
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Winget found at: $WingetPath ***"
-        $newWingetVersion = & "$WingetPath" -v
-        Write-Host "*** AIB CUSTOMIZER PHASE *** Installed Winget Version: $newWingetVersion ***"
-    } else {
-        Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Winget is not recognized. A reboot may be required. ***"
-    }
+# Enable `msstore` Source and Accept Agreements
+Start-Process -FilePath $WingetPath `
+    -ArgumentList "source enable --name msstore" `
+    -Wait -NoNewWindow
+
+# Ensure Winget Sends Region Data
+$settingsPath = "$env:TEMP\winget-settings.json"
+
+Start-Process -FilePath $WingetPath `
+    -ArgumentList "settings export -o $settingsPath" `
+    -Wait -NoNewWindow
+
+if (Test-Path $settingsPath) {
+    $settings = Get-Content $settingsPath | ConvertFrom-Json
+    $settings.InstallBehavior |= @{ "SendRegion" = $true }
+    $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath
+
+    Start-Process -FilePath $WingetPath `
+        -ArgumentList "settings import -i $settingsPath" `
+        -Wait -NoNewWindow
+}
+
+Write-Host "*** AIB CUSTOMIZER PHASE *** Winget preconfiguration complete ***"
+
+# Restart Services to Ensure Winget Works
+Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting services to ensure Winget functions correctly ***"
+$services = @("AppXSvc", "ClipSVC")
+foreach ($service in $services) {
+    Write-Host "*** AIB CUSTOMIZER PHASE *** Restarting $service ***"
+    Restart-Service -Name $service -Force -ErrorAction SilentlyContinue
+}
+
+Write-Host "*** AIB CUSTOMIZER PHASE *** Winget services restarted ***"
+
+# Wait for system to register Winget
+Write-Host "*** AIB CUSTOMIZER PHASE *** Waiting for Winget to become available ***"
+Start-Sleep -Seconds 5
+
+# Check if Winget is installed successfully
+$WingetPath = Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1
+if ($WingetPath) {
+    Write-Host "*** AIB CUSTOMIZER PHASE *** Winget found at: $WingetPath ***"
+    $newWingetVersion = & "$WingetPath" -v
+    Write-Host "*** AIB CUSTOMIZER PHASE *** Installed Winget Version: $newWingetVersion ***"
+} else {
+    Write-Host "*** AIB CUSTOMIZER PHASE ERROR *** Winget is not recognized. A reboot may be required. ***"
 }
 
 # Finalize script execution

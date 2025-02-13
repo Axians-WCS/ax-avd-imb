@@ -3,14 +3,15 @@
     Azure Image Builder script to install Remote Desktop Manager using Winget.
 
 .DESCRIPTION
-    - Finds Winget dynamically to avoid PATH issues.
-    - Installs Remote Desktop Manager.
+    - Ensures .NET Desktop Runtime 8.x is installed before installing Remote Desktop Manager.
+    - Installs the latest available .NET 8 version dynamically.
+    - Installs Remote Desktop Manager using Winget.
 
 .AUTHOR
     Luuk Ros
 
 .VERSION
-    1.2
+    1.6
 
 .LAST UPDATED
     12-02-2025
@@ -32,6 +33,25 @@ if (-not $wingetPath) {
 }
 
 Write-Host "*** Using Winget from: $wingetPath ***"
+
+# Check if any .NET 8 Desktop Runtime is installed
+$dotnetInstalled = & "C:\Program Files\dotnet\dotnet.exe" --list-runtimes | Select-String "Microsoft.WindowsDesktop.App 8."
+
+if (-not $dotnetInstalled) {
+    Write-Host "*** AIB CUSTOMIZER PHASE: .NET Desktop Runtime 8 is missing. Installing latest available version via Winget... ***"
+    
+    try {
+        Start-Process -FilePath $wingetPath `
+            -ArgumentList "install --id Microsoft.DotNet.DesktopRuntime.8 --accept-source-agreements --accept-package-agreements --silent" `
+            -Wait -NoNewWindow
+        Write-Host "*** AIB CUSTOMIZER PHASE: Successfully installed latest .NET Desktop Runtime 8.x ***"
+    } catch {
+        Write-Host "*** AIB CUSTOMIZER PHASE ERROR: Failed to install .NET Desktop Runtime 8 [$($_.Exception.Message)] ***"
+        exit 1
+    }
+} else {
+    Write-Host "*** AIB CUSTOMIZER PHASE: .NET Desktop Runtime 8 is already installed. Skipping installation. ***"
+}
 
 # Define application details
 $wingetAppId = "Devolutions.RemoteDesktopManager"

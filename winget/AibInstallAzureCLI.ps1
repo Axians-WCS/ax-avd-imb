@@ -26,7 +26,7 @@ $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 Write-Host "*** AIB CUSTOMIZER PHASE: Installing Microsoft Azure CLI ***"
 
 # Locate winget dynamically
-$wingetPath = (Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" | Select-Object -First 1)
+$wingetPath = Get-ChildItem -Path "$env:SystemDrive\Program Files\WindowsApps" -Recurse -Filter "winget.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1
 
 # If winget is still not found, fail gracefully
 if (-not $wingetPath) {
