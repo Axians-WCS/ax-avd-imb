@@ -28,7 +28,7 @@ $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 Write-Host "*** AIB CUSTOMIZER PHASE: Installing or Upgrading Winget ***"
 
 # Check if Winget is Already Installed
-$WingetPath = Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1
+$wingetPath = Get-ChildItem -Path "$env:SystemDrive\Program Files\WindowsApps" -Recurse -Filter "winget.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1
 if ($WingetPath) {
     Write-Host "*** AIB CUSTOMIZER PHASE *** Winget already installed at: $WingetPath ***"
     $currentWingetVersion = & "$WingetPath" -v
@@ -119,7 +119,7 @@ Write-Host "*** AIB CUSTOMIZER PHASE *** Waiting for Winget to become available 
 Start-Sleep -Seconds 5
 
 # Check if Winget is installed successfully
-$WingetPath = Get-ChildItem "C:\Program Files\WindowsApps\" -Recurse -Filter "winget.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1
+$wingetPath = Get-ChildItem -Path "$env:SystemDrive\Program Files\WindowsApps" -Recurse -Filter "winget.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName -First 1
 if ($WingetPath) {
     Write-Host "*** AIB CUSTOMIZER PHASE *** Winget found at: $WingetPath ***"
     $newWingetVersion = & "$WingetPath" -v

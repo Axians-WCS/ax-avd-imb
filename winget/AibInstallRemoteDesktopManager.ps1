@@ -35,7 +35,7 @@ if (-not $wingetPath) {
 Write-Host "*** Using Winget from: $wingetPath ***"
 
 # Check if any .NET 8 Desktop Runtime is installed
-$dotnetInstalled = & "C:\Program Files\dotnet\dotnet.exe" --list-runtimes | Select-String "Microsoft.WindowsDesktop.App 8."
+$dotnetInstalled = & "$env:SystemDrive\Program Files\dotnet\dotnet.exe" --list-runtimes | Select-String "Microsoft.WindowsDesktop.App 8."
 
 if (-not $dotnetInstalled) {
     Write-Host "*** AIB CUSTOMIZER PHASE: .NET Desktop Runtime 8 is missing. Installing latest available version via Winget... ***"
