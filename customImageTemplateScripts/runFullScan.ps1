@@ -1,5 +1,20 @@
-<#Author       : Luuk Ros
-# Usage        : Perform a Full System Scan using Windows Defender
+<#
+.SYNOPSIS
+    Perform a Full System Scan using Windows Defender
+
+.DESCRIPTION
+    This script:
+    - Performs a full scan of Windows
+    - Checks for threats detected during the scan and reports them
+
+.AUTHOR
+    Luuk Ros
+
+.VERSION
+    1.1
+
+.LAST UPDATED
+    17-02-2024
 #>
 
 #################################################################
@@ -74,6 +89,6 @@ $elapsedTime = $stopwatch.Elapsed
 Write-Host "*** AVD AIB CUSTOMIZER PHASE : Full System Scan - Exit Code: $LASTEXITCODE ***"
 Write-Host "*** Ending AVD AIB CUSTOMIZER PHASE: Full System Scan - Time taken: $elapsedTime ***"
 
-#############
-#    END    #
-#############
+#################################################################
+#                         END OF SCRIPT                         #
+#################################################################
