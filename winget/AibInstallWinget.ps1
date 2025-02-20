@@ -4,10 +4,9 @@
 
 .DESCRIPTION
     This script:
+    - Checks if Winget is already installed and skips unnecessary installs.
     - Downloads and installs the latest version of Winget.
     - Ensures Winget is preconfigured for use in automated builds.
-    - Enables `msstore` source and accepts agreements.
-    - Checks if Winget is already installed and skips unnecessary installs.
     - Restarts required services only if necessary.
 
 .AUTHOR
