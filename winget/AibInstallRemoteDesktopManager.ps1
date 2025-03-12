@@ -61,12 +61,29 @@ $wingetAppName = "Remote Desktop Manager"
 Write-Host "*** AIB CUSTOMIZER PHASE *** Installing $wingetAppName ($wingetAppId) using Winget ***"
 try {
     Start-Process -FilePath $wingetPath `
-        -ArgumentList "install --id $wingetAppId --accept-source-agreements --accept-package-agreements --scope machine --silent" `
+        -ArgumentList "install --id $wingetAppId --accept-source-agreements --accept-package-agreements --scope machine --silent --custom ALLUSERS=1" `
         -Wait -NoNewWindow
     Write-Host "*** AIB CUSTOMIZER PHASE *** Successfully installed $wingetAppName ***"
 } catch {
     Write-Host "*** AIB CUSTOMIZER PHASE ERROR: Failed to install $wingetAppName [$($_.Exception.Message)] ***"
     exit 1
+}
+
+# Manually create the Start Menu shortcut
+Write-Host "*** AIB CUSTOMIZER PHASE: Verifying Start Menu Shortcut for $wingetAppName ***"
+
+$shortcutPath = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Remote Desktop Manager.lnk"
+$targetPath = "C:\Program Files\Devolutions\Remote Desktop Manager\RemoteDesktopManager.exe"
+
+if (Test-Path $targetPath) {
+    $WScriptShell = New-Object -ComObject WScript.Shell
+    $Shortcut = $WScriptShell.CreateShortcut($shortcutPath)
+    $Shortcut.TargetPath = $targetPath
+    $Shortcut.WorkingDirectory = "C:\Program Files\Remote Desktop Manager"
+    $Shortcut.Save()
+    Write-Host "*** AIB CUSTOMIZER PHASE: Successfully created Start Menu shortcut for $wingetAppName ***"
+} else {
+    Write-Host "*** AIB CUSTOMIZER PHASE WARNING: Installation path not found. Skipping shortcut creation. ***"
 }
 
 # Finalize script execution
