@@ -20,10 +20,10 @@
 #                 CREATE AAD BROKER SCHEDULED TASK              #
 #################################################################
 
-$taskName = "AAD Broker Plugin Fix"
+$ShedShortName = "Register Microsoft AAD BrokerPlugin"
 $installPath = "C:\Axians"
 $scriptPath = Join-Path $installPath "Register.Microsoft.AAD.BrokerPlugin.ps1"
-$scriptUrl = "https://raw.githubusercontent.com/Axians-WCS/ax-avd-imb/main/customImageTemplateScripts/AADBrokerPlugin/Register.Microsoft.AAD.BrokerPlugin.ps1"
+$scriptUrl = "https://raw.githubusercontent.com/Axians-WCS/ax-avd-imb/refs/heads/main/customImageTemplateScripts/aadBrokerPlugin/Register.Microsoft.AAD.BrokerPlugin.ps1"
 
 # Ensure the installation folder exists
 if (-not (Test-Path -Path $installPath)) {
@@ -41,20 +41,25 @@ try {
     exit 1
 }
 
-# Define scheduled task parameters
-$taskAction = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File `"$scriptPath`""
-$taskTrigger = New-ScheduledTaskTrigger -AtLogOn
-$taskPrincipal = New-ScheduledTaskPrincipal -UserId "BUILTIN\Users" -LogonType Interactive
-$taskSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+# Define Triger and Scheduled Task
+$trigger1 = New-ScheduledTaskTrigger -AtLogOn 
+$action = New-ScheduledTaskAction -Execute 'PowerShell' -Argument "-NoLogo -WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass -File 'C:\Axians\Register.Microsoft.AAD.BrokerPlugin.ps1'"
 
-# Register the scheduled task
-try {
-    Register-ScheduledTask -TaskName $taskName -Action $taskAction -Trigger $taskTrigger -Principal $taskPrincipal -Settings $taskSettings -Force
-    Write-Host "Scheduled task '$taskName' created successfully."
-} catch {
-    Write-Host "ERROR: Failed to create scheduled task: $_"
-    exit 1
-}
+# Create a trigger array with the logon trigger
+$trigger = @(
+    $trigger1		
+)
+
+# Define the principal and settings for the scheduled task
+$principal = New-ScheduledTaskPrincipal -GroupId S-1-5-32-545
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+
+# Create and register the scheduled task
+$task = New-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+Register-ScheduledTask $ShedShortName -InputObject $task
+
+# Start the scheduled task
+Start-ScheduledTask $ShedShortName
 
 #################################################################
 #                         END OF SCRIPT                         #

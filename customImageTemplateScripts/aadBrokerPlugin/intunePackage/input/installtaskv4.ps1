@@ -10,7 +10,7 @@ if (-not (Test-Path -Path $AxiansPath)) {
 Copy-Item -Path ".\Register.Microsoft.AAD.BrokerPlugin.ps1" -Destination "C:\Axians" -Force
 
 # Define the scheduled task short name
-$ShedShortName = "Register Microsoft AAD BrokerPlugin"
+$ShedShortName = "Register Microsoft AAD BrokerPlugin2"
 
 # Check if the task already exists, and if it does, remove it
 if (Get-ScheduledTask -TaskName $ShedShortName -ErrorAction SilentlyContinue) {
