@@ -29,4 +29,4 @@ OneDrive not signing in automatically
 Outlook prompting for credentials repeatedly  
 General authentication failures with Microsoft services  
 
-This solution prevents these issues and ensures a smooth experience for users on Azure Virtual Desktop.
+This solution prevents these issues and ensures a smooth experience for users on Azure Virtual Desktop. 
