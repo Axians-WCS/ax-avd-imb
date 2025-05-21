@@ -3,7 +3,7 @@ if (-not (Test-Path -Path $scheduledtasks)) {
     New-Item -ItemType Directory -Path $scheduledtasks
 }
 # download location of brokerscript
-$Brokerscript= "https://github.com/Axians-WCS/ax-avd-imb/blob/main/customImageTemplateScripts/aadBrokerPlugin/Register.Microsoft.AAD.BrokerPlugin.ps1"
+$Brokerscript= "https://raw.githubusercontent.com/Axians-WCS/ax-avd-imb/refs/heads/main/customImageTemplateScripts/aadBrokerPlugin/Register.Microsoft.AAD.BrokerPlugin.ps1"
 # Define the path to the new file
 $filePath = "$scheduledtasks\Register.Microsoft.AAD.BrokerPlugin.ps1"
 
