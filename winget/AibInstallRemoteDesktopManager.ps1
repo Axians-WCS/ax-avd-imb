@@ -90,7 +90,7 @@ $wingetAppName = "Remote Desktop Manager"
 Write-Host "*** AIB CUSTOMIZER PHASE *** Installing $wingetAppName ($wingetAppId) using Winget ***"
 try {
     Start-Process -FilePath $wingetPath `
-        -ArgumentList "install --id $wingetAppId --accept-source-agreements --accept-package-agreements --scope machine --silent --custom ALLUSERS=1" `
+        -ArgumentList "install --id $wingetAppId --accept-source-agreements --accept-package-agreements --scope machine --silent" `
         -Wait -NoNewWindow
     Write-Host "*** AIB CUSTOMIZER PHASE *** Successfully installed $wingetAppName ***"
 } catch {
