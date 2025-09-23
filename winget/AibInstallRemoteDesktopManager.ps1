@@ -80,6 +80,8 @@ if (-not $dotnet9Installed) {
     Write-Host "*** AIB CUSTOMIZER PHASE: .NET Desktop Runtime 9 is already installed. Skipping installation. ***"
 }
 
+Start-Sleep -Seconds 60
+
 # Define application details
 $wingetAppId = "Devolutions.RemoteDesktopManager"
 $wingetAppName = "Remote Desktop Manager"
