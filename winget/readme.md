@@ -16,6 +16,7 @@ This repository contains scripts to install applications using Winget with Azure
 | **AibInstallAzureStorageExplorer.ps1** | Installs Azure Storage Explorer, a GUI tool for managing Azure Storage accounts. |
 | **aibInstallDaxStudios.ps1**        | Installs DAX Studio, a tool for analyzing and optimizing DAX queries. |
 | **AibInstallKeePassXC.ps1**         | Installs KeePassXC, a password manager. |
+| **AibInstallmRemoteNG.ps1**        | Installs mRemoteNG, a multi-protocol remote connections manager. |
 | **AibInstallNotepad++.ps1**         | Installs Notepad++, an advanced text editor. |
 | **aibInstallOctoparse.ps1**         | Installs Octoparse, a web scraping tool. |
 | **aibInstallOdbc17.ps1**            | Installs ODBC Driver 17 for SQL Server. |
