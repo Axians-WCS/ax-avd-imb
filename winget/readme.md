@@ -4,18 +4,29 @@ This repository contains scripts to install applications using Winget with Azure
 
 ## How It Works
 - The `AibInstallWinget.ps1` script ensures that Winget is installed and ready to use on the host.
-- All other scripts install specific applications, following a modular** approach.
+- All other scripts install specific applications, following a modular approach.
 
 ## 📜 Script Overview
 
 | Script Name                          | Description |
 |--------------------------------------|-------------|
-| **aibInstallWinget.ps1**            | Ensures Winget is installed and initialized. This script is required before running any other installation scripts. |
-| **aibInstallAzureCLI.ps1**          | Installs Azure CLI, a command-line tool for managing Azure resources. |
-| **aibInstallAzureStorageExplorer.ps1** | Installs Azure Storage Explorer, a GUI tool for managing Azure Storage accounts. |
-| **aibInstallPowerBi.ps1**           | Installs Microsoft Power BI Desktop, used for data visualization and business intelligence. |
-| **aibInstallSSMS.ps1**              | Installs SQL Server Management Studio (SSMS), a tool for managing Microsoft SQL Server databases. |
-| **aibInstallRemoteDesktopManager.ps1**              | Installs Devolutions Remote Desktop Manager, a tool for managing servers remotely. |
+| **AibInstallWinget.ps1**            | Ensures Winget is installed and initialized. This script is required before running any other installation scripts. |
+| **AibInstallAzureCLI.ps1**          | Installs Azure CLI, a command-line tool for managing Azure resources. |
+| **AibInstallAzureStorageExplorer.ps1** | Installs Azure Storage Explorer, a GUI tool for managing Azure Storage accounts. |
+| **AibInstallPowerBi.ps1**           | Installs Microsoft Power BI Desktop, used for data visualization and business intelligence. |
+| **AibInstallSSMS.ps1**              | Installs SQL Server Management Studio (SSMS), a tool for managing Microsoft SQL Server databases. |
+| **AibInstallRemoteDesktopManager.ps1** | Installs Devolutions Remote Desktop Manager, a tool for managing servers remotely. |
+| **AibInstallNotepad++.ps1**         | Installs Notepad++, an advanced text editor. |
+| **AibInstallPostman.ps1**           | Installs Postman, an API platform for building and using APIs. |
+| **AibInstallWinScp.ps1**            | Installs WinSCP, a file transfer tool for SFTP, FTP, and SCP. |
+| **AibInstallAgentRansack.ps1**      | Installs Agent Ransack, a file searching utility. |
+| **aibInstallDaxStudios.ps1**        | Installs DAX Studio, a tool for analyzing and optimizing DAX queries. |
+| **aibInstallOctoparse.ps1**         | Installs Octoparse, a web scraping tool. |
+| **aibInstallOdbc17.ps1**            | Installs ODBC Driver 17 for SQL Server. |
+| **aibInstallOdbc18.ps1**            | Installs ODBC Driver 18 for SQL Server. |
+
+## ⚠️ Known Issues
+- The Postman installation script (`AibInstallPostman.ps1`) is currently not working and needs investigation.
 
 ## 🔧 Usage
 Add the scripts during the Customizations step in Azure Image Builder by clicking `+ Add your own` script and providing the script URL and giving it a name.
