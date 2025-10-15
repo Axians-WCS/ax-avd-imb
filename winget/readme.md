@@ -11,19 +11,22 @@ This repository contains scripts to install applications using Winget with Azure
 | Script Name                          | Description |
 |--------------------------------------|-------------|
 | **AibInstallWinget.ps1**            | Ensures Winget is installed and initialized. This script is required before running any other installation scripts. |
+| **AibInstallAgentRansack.ps1**      | Installs Agent Ransack, a file searching utility. |
 | **AibInstallAzureCLI.ps1**          | Installs Azure CLI, a command-line tool for managing Azure resources. |
 | **AibInstallAzureStorageExplorer.ps1** | Installs Azure Storage Explorer, a GUI tool for managing Azure Storage accounts. |
-| **AibInstallPowerBi.ps1**           | Installs Microsoft Power BI Desktop, used for data visualization and business intelligence. |
-| **AibInstallSSMS.ps1**              | Installs SQL Server Management Studio (SSMS), a tool for managing Microsoft SQL Server databases. |
-| **AibInstallRemoteDesktopManager.ps1** | Installs Devolutions Remote Desktop Manager, a tool for managing servers remotely. |
-| **AibInstallNotepad++.ps1**         | Installs Notepad++, an advanced text editor. |
-| **AibInstallPostman.ps1**           | Installs Postman, an API platform for building and using APIs. |
-| **AibInstallWinScp.ps1**            | Installs WinSCP, a file transfer tool for SFTP, FTP, and SCP. |
-| **AibInstallAgentRansack.ps1**      | Installs Agent Ransack, a file searching utility. |
 | **aibInstallDaxStudios.ps1**        | Installs DAX Studio, a tool for analyzing and optimizing DAX queries. |
+| **AibInstallKeePassXC.ps1**         | Installs KeePassXC, a password manager. |
+| **AibInstallNotepad++.ps1**         | Installs Notepad++, an advanced text editor. |
 | **aibInstallOctoparse.ps1**         | Installs Octoparse, a web scraping tool. |
 | **aibInstallOdbc17.ps1**            | Installs ODBC Driver 17 for SQL Server. |
 | **aibInstallOdbc18.ps1**            | Installs ODBC Driver 18 for SQL Server. |
+| **AibInstallPostman.ps1**           | Installs Postman, an API platform for building and using APIs. |
+| **AibInstallPowerBi.ps1**           | Installs Microsoft Power BI Desktop, used for data visualization and business intelligence. |
+| **AibInstallPutty.ps1**             | Installs Putty, a terminal emulator and SSH client. |
+| **AibInstallRemoteDesktopManager.ps1** | Installs Devolutions Remote Desktop Manager, a tool for managing servers remotely. |
+| **AibInstallSSMS.ps1**              | Installs SQL Server Management Studio (SSMS), a tool for managing Microsoft SQL Server databases. |
+| **AibInstallTeamViewer.ps1**        | Installs TeamViewer, a remote access and support tool. |
+| **AibInstallWinScp.ps1**            | Installs WinSCP, a file transfer tool for SFTP, FTP, and SCP. |
 
 ## ⚠️ Known Issues
 - The Postman installation script (`AibInstallPostman.ps1`) is currently not working and needs investigation.
