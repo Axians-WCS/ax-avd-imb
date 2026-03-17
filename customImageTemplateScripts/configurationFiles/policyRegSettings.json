@@ -1,0 +1,107 @@
+[
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OOBE",
+        "RegItemValueName": "HideOOBE",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "1",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OOBE",
+        "RegItemValueName": "HideLocalAccountScreen",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "1",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+        "RegItemValueName": "EnableFirstLogonAnimation",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "0",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "RegItemValueName": "DisableAcrylicBackgroundOnLogon",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "1",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "RegItemValueName": "DisableWindowsConsumerFeatures",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "1",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "RegItemValueName": "DisableThirdPartySuggestions",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "1",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "RegItemValueName": "ConfigureWindowsSpotlight",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "2",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "RegItemValueName": "DODownloadMode",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "99",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\BITS",
+        "RegItemValueName": "DisablePeerCachingClient",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "1",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "RegItemValueName": "DoNotShowFeedbackNotifications",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "1",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows",
+        "RegItemValueName": "CEIPEnable",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "0",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DWM",
+        "RegItemValueName": "DisallowAnimations",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "1",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\Edge\\Recommended",
+        "RegItemValueName": "StartupBoostEnabled",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "0",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKCU:\\SOFTWARE\\Policies\\Microsoft\\EdgeUpdate",
+        "RegItemValueName": "UpdatesSuppressedDurationMin",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "900",
+        "VDIState": "Enabled"
+    },
+    {
+        "RegItemPath": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+        "RegItemValueName": "AllowCortanaAboveLock",
+        "RegItemValueType": "DWord",
+        "RegItemValue": "0",
+        "VDIState": "Enabled"
+    }
+]
