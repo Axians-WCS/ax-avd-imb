@@ -13,10 +13,10 @@
     Luuk Ros (Based on avd-installapplications by Niek Pruntel)
 
 .VERSION
-    1.7
+    1.8
 
 .LAST UPDATED
-    12-02-2025
+    24-07-2026
 #>
 
 #################################################################
@@ -79,27 +79,6 @@ Start-Process -FilePath $WingetPath `
     -ArgumentList "source update" `
     -Wait -NoNewWindow
 
-# Enable `msstore` Source and Accept Agreements
-Start-Process -FilePath $WingetPath `
-    -ArgumentList "source enable --name msstore" `
-    -Wait -NoNewWindow
-
-# Ensure Winget Sends Region Data
-$settingsPath = "$env:TEMP\winget-settings.json"
-
-Start-Process -FilePath $WingetPath `
-    -ArgumentList "settings export -o $settingsPath" `
-    -Wait -NoNewWindow
-
-if (Test-Path $settingsPath) {
-    $settings = Get-Content $settingsPath | ConvertFrom-Json
-    $settings.InstallBehavior |= @{ "SendRegion" = $true }
-    $settings | ConvertTo-Json -Depth 10 | Set-Content -Path $settingsPath
-
-    Start-Process -FilePath $WingetPath `
-        -ArgumentList "settings import -i $settingsPath" `
-        -Wait -NoNewWindow
-}
 
 Write-Host "*** AIB CUSTOMIZER PHASE *** Winget preconfiguration complete ***"
 
